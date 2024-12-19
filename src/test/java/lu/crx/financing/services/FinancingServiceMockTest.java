@@ -6,8 +6,9 @@ import lu.crx.financing.entities.Purchaser;
 import lu.crx.financing.repositories.InvoiceRepository;
 import lu.crx.financing.repositories.PurchaserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,19 +35,22 @@ public class FinancingServiceMockTest {
         financingService = new FinancingService(invoiceRepository, purchaserRepository);
     }
 
-    @Test
-    void shouldNotSaveWhenInvoicesToFinanceNotFound() {
-        when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of());
+    @ParameterizedTest
+    @EnumSource(FinancingService.QueryMode.class)
+    void shouldNotSaveWhenInvoicesToFinanceNotFound(FinancingService.QueryMode mode) {
+        lenient().when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of());
+        lenient().when(invoiceRepository.findNotFinancedForAllPurchasers()).thenReturn(List.of());
 
-        financingService.finance();
+        financingService.finance(mode);
 
         verify(invoiceRepository, never()).findById(anyLong());
         verify(purchaserRepository, never()).findById(anyLong());
         verify(invoiceRepository, times(1)).saveAll(eq(List.of()));
     }
 
-    @Test
-    void shouldSaveWhenInvoiceForTheGivenIdIsFound() {
+    @ParameterizedTest
+    @EnumSource(FinancingService.QueryMode.class)
+    void shouldSaveWhenInvoiceForTheGivenIdIsFound(FinancingService.QueryMode mode) {
         var invoiceId = 1L;
         var purchaserId = 2L;
         var daysToFinance = 10;
@@ -58,7 +62,8 @@ public class FinancingServiceMockTest {
 
         when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
         when(purchaserRepository.findById(purchaserId)).thenReturn(Optional.of(purchaser));
-        when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of(tuple));
+        lenient().when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of(tuple));
+        lenient().when(invoiceRepository.findNotFinancedForAllPurchasers()).thenReturn(List.of(tuple));
         when(tuple.getInvoiceId()).thenReturn(invoiceId);
         when(tuple.getPurchaserId()).thenReturn(purchaserId);
         when(tuple.getDaysToFinance()).thenReturn(daysToFinance);
@@ -67,7 +72,7 @@ public class FinancingServiceMockTest {
         when(invoice.getId()).thenReturn(invoiceId);
         when(purchaser.getId()).thenReturn(purchaserId);
 
-        financingService.finance();
+        financingService.finance(mode);
 
         var captor = ArgumentCaptor.forClass(List.class);
 
@@ -75,7 +80,7 @@ public class FinancingServiceMockTest {
         verify(purchaserRepository, times(1)).findById(eq(2L));
         verify(invoiceRepository, times(1)).saveAll(captor.capture());
 
-        var capturedInvoice = (Invoice)captor.getValue().get(0);
+        var capturedInvoice = (Invoice)captor.getValue().getFirst();
 
         assertThat(captor.getValue()).hasSize(1);
         assertThat(capturedInvoice.getId()).isEqualTo(invoiceId);
@@ -85,8 +90,9 @@ public class FinancingServiceMockTest {
         assertThat(capturedInvoice.getFinancing().getEarlyPaymentAmountInCents()).isEqualTo(earlyPaymentAmount);
     }
 
-    @Test
-    void shouldSaveWhenPurchaserForTheGivenIdIsNotFoundButInvoiceForTheGivenIdIsFound() {
+    @ParameterizedTest
+    @EnumSource(FinancingService.QueryMode.class)
+    void shouldSaveWhenPurchaserForTheGivenIdIsNotFoundButInvoiceForTheGivenIdIsFound(FinancingService.QueryMode mode) {
         var invoiceId = 1L;
         var purchaserId = 2L;
         var daysToFinance = 10;
@@ -97,7 +103,8 @@ public class FinancingServiceMockTest {
 
         when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoice));
         when(purchaserRepository.findById(purchaserId)).thenReturn(Optional.empty());
-        when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of(tuple));
+        lenient().when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of(tuple));
+        lenient().when(invoiceRepository.findNotFinancedForAllPurchasers()).thenReturn(List.of(tuple));
         when(tuple.getInvoiceId()).thenReturn(invoiceId);
         when(tuple.getPurchaserId()).thenReturn(purchaserId);
         when(tuple.getDaysToFinance()).thenReturn(daysToFinance);
@@ -105,7 +112,7 @@ public class FinancingServiceMockTest {
         when(tuple.getEarlyPaymentAmount()).thenReturn(earlyPaymentAmount);
         when(invoice.getId()).thenReturn(invoiceId);
 
-        financingService.finance();
+        financingService.finance(mode);
 
         var captor = ArgumentCaptor.forClass(List.class);
 
@@ -113,7 +120,7 @@ public class FinancingServiceMockTest {
         verify(purchaserRepository, times(1)).findById(eq(2L));
         verify(invoiceRepository, times(1)).saveAll(captor.capture());
 
-        var capturedInvoice = (Invoice)captor.getValue().get(0);
+        var capturedInvoice = (Invoice)captor.getValue().getFirst();
 
         assertThat(captor.getValue()).hasSize(1);
         assertThat(capturedInvoice.getId()).isEqualTo(invoiceId);
@@ -123,8 +130,9 @@ public class FinancingServiceMockTest {
         assertThat(capturedInvoice.getFinancing().getEarlyPaymentAmountInCents()).isEqualTo(earlyPaymentAmount);
     }
 
-    @Test
-    void shouldNotSaveWhenInvoiceForTheGivenIdIsNotFound() {
+    @ParameterizedTest
+    @EnumSource(FinancingService.QueryMode.class)
+    void shouldNotSaveWhenInvoiceForTheGivenIdIsNotFound(FinancingService.QueryMode mode) {
         var invoiceId = 1L;
         var purchaserId = 2L;
         var daysToFinance = 10;
@@ -134,14 +142,15 @@ public class FinancingServiceMockTest {
 
         when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.empty());
         when(purchaserRepository.findById(purchaserId)).thenReturn(Optional.empty());
-        when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of(tuple));
+        lenient().when(invoiceRepository.findNotFinancedForLowestRatePurchaser()).thenReturn(List.of(tuple));
+        lenient().when(invoiceRepository.findNotFinancedForAllPurchasers()).thenReturn(List.of(tuple));
         when(tuple.getInvoiceId()).thenReturn(invoiceId);
         when(tuple.getPurchaserId()).thenReturn(purchaserId);
         when(tuple.getDaysToFinance()).thenReturn(daysToFinance);
         when(tuple.getFinancingRate()).thenReturn(financingRate);
         when(tuple.getEarlyPaymentAmount()).thenReturn(earlyPaymentAmount);
 
-        financingService.finance();
+        financingService.finance(mode);
 
         verify(invoiceRepository, times(1)).findById(eq(1L));
         verify(purchaserRepository, times(1)).findById(eq(2L));

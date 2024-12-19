@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
+import static lu.crx.financing.services.FinancingService.QueryMode.QUERY_FOR_LOWEST_RATE;
+
 @SpringBootApplication
 public class AssignmentFinancingApplication {
 
@@ -29,7 +31,7 @@ public class AssignmentFinancingApplication {
             seedingService.seedInvoices();
 
             // running the financing
-            financingService.finance();
+            financingService.finance(QUERY_FOR_LOWEST_RATE);
         };
     }
 

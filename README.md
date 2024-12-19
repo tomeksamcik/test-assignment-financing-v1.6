@@ -109,3 +109,4 @@ financed invoice on **financing date**. This amount is less than the value of th
 * There are two invoice repository methods, one returns invoices with all purchasers eligible for financing and further processing to find the one offering best rate is needed, the other one selects lowest rate purchaser with the query. 
   * The second query may be slightly less efficient and may require some tweaks.
   * In case the first method is used, financing services `getInvoicesToFinanceForAllPurchasers` should be used for processing results
+* I noticed that it happens from time to time that tests fail to startup h2 database in the first run -- would need to be investigated what's the cause of this  

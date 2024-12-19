@@ -19,6 +19,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FinancingService {
 
+    public enum QueryMode {
+        QUERY_FOR_ALL, QUERY_FOR_LOWEST_RATE
+    }
+
     @Autowired
     private InvoiceRepository invoiceRepository;
 
@@ -26,15 +30,13 @@ public class FinancingService {
     private PurchaserRepository purchaserRepository;
 
     @Transactional
-    public void finance() {
+    public void finance(QueryMode mode) {
         log.info("Financing started");
 
-        /*
-        Commented out approach yields same results, but requires data post-processing
-        The second approach will fail tests in FinancingServiceMockTest
-         */
-        var invoicesToFinance = getInvoicesToFinanceForLowestRatePurchaser();
-        //var invoicesToFinance = getInvoicesToFinanceForAllPurchasers();
+        var invoicesToFinance = switch (mode) {
+            case QUERY_FOR_ALL -> getInvoicesToFinanceForAllPurchasers();
+            case QUERY_FOR_LOWEST_RATE -> getInvoicesToFinanceForLowestRatePurchaser();
+        };
 
         log.info("{} invoices to finance found", invoicesToFinance.size());
         invoicesToFinance.forEach(i ->
