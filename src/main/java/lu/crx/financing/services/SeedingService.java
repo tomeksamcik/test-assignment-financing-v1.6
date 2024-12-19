@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SeedingService {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     private Creditor creditor1;
     private Creditor creditor2;

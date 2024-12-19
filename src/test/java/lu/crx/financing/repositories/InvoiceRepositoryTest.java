@@ -68,11 +68,11 @@ public class InvoiceRepositoryTest {
         var invoices = invoiceRepository.findNotFinancedForLowestRatePurchaser();
 
         assertThat(invoices).hasSize(10);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(1L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(1L).isNotEqualTo(2L);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(3L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(1L);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(7L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(2L);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(13L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(3L);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(14L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(3L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(1L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(1L).isNotEqualTo(2L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(3L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(1L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(7L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(2L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(13L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(3L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(14L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(3L);
         assertThat(invoices.stream().map(InvoiceTuple::getPurchaserId)).doesNotContain(4L, 8L, 9L, 15L);
     }
 
@@ -93,9 +93,9 @@ public class InvoiceRepositoryTest {
         var invoices = invoiceRepository.findNotFinancedForLowestRatePurchaser();
 
         assertThat(invoices).hasSize(10);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(6L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(2L);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(10L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(2L);
-        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(11L)).map(InvoiceTuple::getPurchaserId).findFirst().get()).isNotEqualTo(2L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(6L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(2L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(10L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(2L);
+        assertThat(invoices.stream().filter(it -> it.getInvoiceId().equals(11L)).map(InvoiceTuple::getPurchaserId).findFirst().orElseThrow()).isNotEqualTo(2L);
         assertThat(invoices.stream().map(InvoiceTuple::getPurchaserId).toList()).doesNotContain(5L);
     }
 

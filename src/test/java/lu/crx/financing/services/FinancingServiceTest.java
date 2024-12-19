@@ -47,15 +47,15 @@ public class FinancingServiceTest {
 
         assertThat(invoices.stream().filter(i -> i.getFinancing() != null).map(Invoice::getId).toList())
                 .doesNotContain(4L, 5L, 8L, 9L, 15L);
-        assertThat(invoices.stream().filter(i -> i.getId() == 1).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(3);
-        assertThat(invoices.stream().filter(i -> i.getId() == 2).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(3);
-        assertThat(invoices.stream().filter(i -> i.getId() == 3).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(3);
-        assertThat(invoices.stream().filter(i -> i.getId() == 6).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(3);
-        assertThat(invoices.stream().filter(i -> i.getId() == 7).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(3);
-        assertThat(invoices.stream().filter(i -> i.getId() == 10).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(3);
-        assertThat(invoices.stream().filter(i -> i.getId() == 11).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(1);
-        assertThat(invoices.stream().filter(i -> i.getId() == 12).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(2);
-        assertThat(invoices.stream().filter(i -> i.getId() == 13).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(2);
-        assertThat(invoices.stream().filter(i -> i.getId() == 14).findFirst().get().getFinancing().getPurchaser().getId()).isEqualTo(2);
+        assertThat(invoices.stream().filter(i -> i.getId() == 1).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(3);
+        assertThat(invoices.stream().filter(i -> i.getId() == 2).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(3);
+        assertThat(invoices.stream().filter(i -> i.getId() == 3).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(3);
+        assertThat(invoices.stream().filter(i -> i.getId() == 6).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(3);
+        assertThat(invoices.stream().filter(i -> i.getId() == 7).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(3);
+        assertThat(invoices.stream().filter(i -> i.getId() == 10).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(3);
+        assertThat(invoices.stream().filter(i -> i.getId() == 11).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(1);
+        assertThat(invoices.stream().filter(i -> i.getId() == 12).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(2);
+        assertThat(invoices.stream().filter(i -> i.getId() == 13).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(2);
+        assertThat(invoices.stream().filter(i -> i.getId() == 14).findFirst().orElseThrow().getFinancing().getPurchaser().getId()).isEqualTo(2);
     }
 }
