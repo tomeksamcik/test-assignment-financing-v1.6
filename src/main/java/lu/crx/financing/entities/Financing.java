@@ -20,7 +20,7 @@ public class Financing {
     private long id;
 
     /**
-     * Purchaser that is financing the invoice.
+     * {@link Purchaser} financing the {@link Invoice}.
      */
     @ManyToOne(optional = false)
     private Purchaser purchaser;

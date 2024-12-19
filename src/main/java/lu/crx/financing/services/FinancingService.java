@@ -29,6 +29,10 @@ public class FinancingService {
     public void finance() {
         log.info("Financing started");
 
+        /*
+        Commented out approach yields same results, but requires data post-processing
+        The second approach will fail tests in FinancingServiceMockTest
+         */
         var invoicesToFinance = getInvoicesToFinanceForLowestRatePurchaser();
         //var invoicesToFinance = getInvoicesToFinanceForAllPurchasers();
 
