@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lu.crx.financing.dtos.InvoiceTuple;
 import lu.crx.financing.entities.Financing;
+import lu.crx.financing.entities.Invoice;
 import lu.crx.financing.repositories.InvoiceRepository;
 import lu.crx.financing.repositories.PurchaserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,13 @@ public class FinancingService {
                 log.info("invoiceId: {}. purchaserId : {}, daysToFinance: {}, financingRate: {}, earlyPaymentAmount: {}",
                         i.getInvoiceId(), i.getPurchaserId(), i.getDaysToFinance(), i.getFinancingRate(), i.getEarlyPaymentAmount()));
 
-        var invoicesToSave = invoicesToFinance.stream()
+        invoiceRepository.saveAll(getInvoicesToSave(invoicesToFinance));
+
+        log.info("Financing completed");
+    }
+
+    private List<Invoice> getInvoicesToSave(List<InvoiceTuple> invoicesToFinance) {
+        return invoicesToFinance.stream()
                 .map(invoiceTuple -> {
                     var purchaser = purchaserRepository.findById(invoiceTuple.getPurchaserId());
                     var invoice = invoiceRepository.findById(invoiceTuple.getInvoiceId());
@@ -59,10 +66,6 @@ public class FinancingService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
-
-        invoiceRepository.saveAll(invoicesToSave);
-
-        log.info("Financing completed");
     }
 
     /*
