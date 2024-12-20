@@ -103,10 +103,11 @@ financed invoice on **financing date**. This amount is less than the value of th
 
 ## Notes
 
-* Implemented solution relies almost entirely on a db query that does all the calculation. 
+* Implemented solution relies almost entirely on a db query that does all the calculations. 
   * This approach seems to be the most efficient in terms of performance, but it makes it hardly testable as there's no business logic in the code.
-* Performance testing hasn't been done as it would require generating large amounts of data, but the solution should be efficient enough.
+* Performance testing hasn't been done as it would require generating large amounts of data, but the solution should be efficient enough. 
+  * Further tweaks could be made for the query to return data from which entities could be derived, so they don't need to be fetched with additional queries. 
 * There are two invoice repository methods, one returns invoices with all purchasers eligible for financing and further processing to find the one offering best rate is needed, the other one selects lowest rate purchaser with the query. 
   * The second query may be slightly less efficient and may require some tweaks.
-  * In case the first method is used, financing services `getInvoicesToFinanceForAllPurchasers` should be used for processing results
-* I noticed that it happens from time to time that tests fail to startup h2 database in the first run -- would need to be investigated what's the cause of this  
+  * In case the first method is used, financing services `getInvoicesToFinanceForAllPurchasers` is used for processing results, otherwise `getInvoicesToFinanceForLowestRatePurchaser` is used.
+* I noticed that it happens from time to time that tests fail to startup h2 database in the first run -- would need to be investigated what's the cause of this and how to fix it/
